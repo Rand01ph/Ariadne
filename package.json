@@ -1,0 +1,11 @@
+{
+  "name": "ariadne",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter ariadne-extension dev",
+    "build": "pnpm --filter ariadne-extension build",
+    "server:dev": "uv run --project packages/server fastapi dev packages/server/src/ariadne_server/main.py",
+    "server:install": "uv sync --project packages/server"
+  },
+  "packageManager": "pnpm@9.15.0"
+}
