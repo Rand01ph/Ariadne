@@ -27,11 +27,16 @@ jobs:
       - name: Build & zip extension
         run: pnpm --filter ariadne-extension zip
 
+      - name: Collect zip
+        run: |
+          mkdir -p dist
+          cp packages/extension/.output/*.zip dist/
+
       - name: Upload extension artifact
         uses: actions/upload-artifact@v4
         with:
           name: ariadne-chrome-mv3
-          path: packages/extension/.output/*.zip
+          path: dist/
           if-no-files-found: error
 
   # ── Server (uv → wheel + sdist) ─────────────────────────────────────────────
