@@ -91,6 +91,9 @@ export default function App() {
     }
 
     Promise.all(tasks).then(() => {
+      if (tasks.length === 0) {
+        chrome.runtime.sendMessage({ type: "RECONNECT" });
+      }
       setState((prev) => ({
         ...prev,
         serverUrl: urlInput,
@@ -100,11 +103,6 @@ export default function App() {
       setSaving(false);
     });
   };
-
-  const isDirty =
-    urlInput !== state.serverUrl ||
-    nameInput !== state.clientName ||
-    tokenInput !== "";
 
   const color = STATUS_COLORS[state.status];
 
@@ -162,9 +160,9 @@ export default function App() {
       </div>
 
       <button
-        style={{ ...styles.button, opacity: !isDirty || saving ? 0.5 : 1 }}
+        style={{ ...styles.button, opacity: saving ? 0.5 : 1 }}
         onClick={handleSave}
-        disabled={saving || !isDirty}
+        disabled={saving}
       >
         {saving ? "Saving..." : "Apply & Reconnect"}
       </button>

@@ -11,11 +11,17 @@ import {
   setBadgeError,
   setGroupColorActive,
   setGroupColorIdle,
+  setConnectionIcon,
 } from "@/lib/badge";
 import type { Command, Response, ContentScriptReadResult } from "@/types/protocol";
 
 async function init(): Promise<void> {
   await registerAlarm();
+
+  // Set initial icon based on stored status + token
+  const stored = await chrome.storage.local.get(["ariadne_connection_status", "ariadne_token"]);
+  setConnectionIcon(stored.ariadne_connection_status ?? "disconnected", !!stored.ariadne_token);
+
   const ws = await getWebSocket();
   ws.setMessageHandler(handleCommand);
   if (!ws.isConnected()) {
@@ -163,6 +169,15 @@ export default defineBackground({
   main() {
     console.log("[Ariadne BG] Service Worker started");
 
+    // Update icon whenever connection status or token changes
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area !== "local") return;
+      if (!("ariadne_connection_status" in changes) && !("ariadne_token" in changes)) return;
+      chrome.storage.local.get(["ariadne_connection_status", "ariadne_token"]).then((stored) => {
+        setConnectionIcon(stored.ariadne_connection_status ?? "disconnected", !!stored.ariadne_token);
+      });
+    });
+
     // Keep-alive alarm (synchronous registration required for MV3)
     chrome.alarms.onAlarm.addListener((alarm) => {
       if (alarm.name === ALARM_NAME) {
@@ -187,6 +202,13 @@ export default defineBackground({
               tokenHint: token ? token.slice(0, 20) + "...[hidden]" : "",
             });
           });
+        return true;
+      }
+
+      if (message.type === "RECONNECT") {
+        getWebSocket().then((ws) => {
+          ws.reconnect().then(() => sendResponse({ ok: true }));
+        });
         return true;
       }
 

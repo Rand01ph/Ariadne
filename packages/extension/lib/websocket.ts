@@ -126,6 +126,12 @@ class AriadneWebSocket {
     this.setStatus("disconnected");
   }
 
+  async reconnect(): Promise<void> {
+    this.destroy();
+    this.destroyed = false;
+    await this.connect();
+  }
+
   async updateServerUrl(newUrl: string): Promise<void> {
     if (newUrl === this.serverUrl) return;
     this.serverUrl = newUrl;
