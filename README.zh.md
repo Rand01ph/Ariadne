@@ -13,6 +13,36 @@ AI Agent  ──POST /v1/cmd──▶  Ariadne Server  ──WebSocket──▶ 
 
 ---
 
+## 与 OpenClaw 完美配合
+
+Ariadne 是 [OpenClaw](https://github.com/openclaw/openclaw)（开源本地 AI Agent）的天然搭档。OpenClaw 负责调度任务，Ariadne 则赋予它在本地 Chrome 浏览器中的"眼睛"和"双手"——包括云端 Agent 永远无法访问的页面。
+
+| 场景 | 为什么 Ariadne + OpenClaw 能解决 |
+|------|--------------------------------|
+| **内网 & VPN 隔离的站点** | 两者都在本地运行，OpenClaw 可读取公司 Wiki、Jira、Confluence 等内部系统，无需暴露到云端 |
+| **需要登录的页面** | 浏览器已经处于登录状态，Ariadne 直接复用现有 Session，无需传递任何密码 |
+| **可视化 Agent 行为** | Agent 访问的每个页面都出现在独立的「🤖 Ariadne Agent」标签组中，全程可见、可随时干预 |
+| **截图反馈** | 每次命令可附带 JPEG 截图，让 LLM 获得页面的视觉确认 |
+
+**与 OpenClaw 配合的快速接入：**
+
+```bash
+# 1 — 启动 Ariadne
+ariadne-server &
+
+# 2 — 加载 Chrome 扩展，粘贴 Token，图标变绿
+
+# 3 — 让 OpenClaw 通过 Ariadne 访问页面
+curl -s -X POST http://127.0.0.1:8000/v1/cmd/my-browser \
+  -H "Authorization: Bearer $(ariadne-server token)" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://internal.corp/wiki", "action": "read"}'
+```
+
+响应中的 Markdown 内容可直接交给 OpenClaw 进行摘要、提取或后续操作。
+
+---
+
 ## 核心哲学：Human-in-the-Control
 
 所有浏览操作都发生在独立的 **"🤖 Ariadne Agent" 标签组**中，可见、可审计、可随时中断。AI 从不隐藏它在做什么。

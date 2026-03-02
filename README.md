@@ -14,6 +14,36 @@ AI Agent  ──POST /v1/cmd──▶  Ariadne Server  ──WebSocket──▶ 
 
 ---
 
+## Works great with OpenClaw
+
+Ariadne is a natural companion to [OpenClaw](https://github.com/openclaw/openclaw), the open-source local AI agent. Where OpenClaw orchestrates your tasks, Ariadne gives it eyes and hands inside your local Chrome — including pages that cloud-based agents can never reach.
+
+| Scenario | Why Ariadne + OpenClaw works |
+|----------|------------------------------|
+| **Intranet & VPN-gated sites** | Both run locally — OpenClaw can read your company wiki, Jira, Confluence, or any internal tool without exposing them to the cloud |
+| **Pages that require login** | Your browser is already logged in. Ariadne reuses your existing session — no credential sharing needed |
+| **Visible agent activity** | Every page the agent visits appears in a dedicated "🤖 Ariadne Agent" tab group. You watch it happen in real time and can intervene at any moment |
+| **Screenshot feedback** | Request a JPEG screenshot with each command so the LLM gets visual confirmation of what the page looks like |
+
+**Quick setup with OpenClaw:**
+
+```bash
+# 1 — Start Ariadne
+ariadne-server &
+
+# 2 — Load the Chrome extension, paste the token, icon turns green
+
+# 3 — Tell OpenClaw to browse via Ariadne
+curl -s -X POST http://127.0.0.1:8000/v1/cmd/my-browser \
+  -H "Authorization: Bearer $(ariadne-server token)" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://internal.corp/wiki", "action": "read"}'
+```
+
+The response Markdown is ready for OpenClaw to summarize, extract, or act on.
+
+---
+
 ## Philosophy: Human-in-the-Control
 
 Every browser operation runs inside a dedicated **"🤖 Ariadne Agent" tab group** — visible, auditable, and stoppable at any time. The AI never hides what it's doing.
