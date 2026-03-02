@@ -11,7 +11,7 @@ from ariadne_server.router.admin import router as admin_router
 from ariadne_server.router.cmd import router as cmd_router
 from ariadne_server.router.ws import router as ws_router
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO)  # fallback if started without CLI
 logger = logging.getLogger(__name__)
 
 

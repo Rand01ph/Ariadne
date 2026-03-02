@@ -17,6 +17,10 @@ def cmd_start(args: argparse.Namespace) -> None:
     import uvicorn
 
     from ariadne_server.config import settings
+    from ariadne_server.log import setup
+
+    log_level = args.log_level or settings.log_level
+    setup(log_level)
 
     uvicorn.run(
         "ariadne_server.main:app",
