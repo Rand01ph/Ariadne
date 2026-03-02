@@ -73,8 +73,17 @@ On first run, the server auto-generates a secure token and writes it to
 `packages/server/.ariadne.key`.  The startup log will show a masked preview:
 
 ```
-INFO  API Key: ariadne_sk_4f8a2c...[hidden]
-INFO  Full key written to .ariadne.key
+2026-03-02 10:23:40 INFO  [log] Logging to /Users/you/.ariadne/server.log
+2026-03-02 10:23:40 INFO  [main] Ariadne Gateway starting
+2026-03-02 10:23:40 INFO  [main] API Key: ariadne_sk_4f8a2c...[hidden]
+2026-03-02 10:23:40 INFO  [main] Full key written to .ariadne.key
+```
+
+All logs are also written to `~/.ariadne/server.log`. If startup fails or the
+server behaves unexpectedly, read this file first:
+
+```bash
+cat ~/.ariadne/server.log
 ```
 
 The server listens on `http://127.0.0.1:8000` by default.
@@ -96,6 +105,18 @@ ariadne_sk_4f8a2c1e9b3d7f0a5c8e2b6d4a1f9e7c3b0d8a6f4c2e0b8d6a4f2c0e8b6d4a2f0
 
 **Important:** Show this token to the user and ask them to paste it into the
 Chrome extension popup → "API Token" field, then click "Apply & Reconnect".
+
+The extension icon reflects connection state:
+
+| Icon color | Meaning |
+|------------|---------|
+| Gray | No token configured |
+| Amber | Connecting… |
+| Green | Connected — ready to use |
+| Red | Disconnected or auth failed |
+
+The **Apply & Reconnect** button can be clicked at any time, even with unchanged
+settings — useful for forcing a reconnect after a network interruption.
 
 ---
 
@@ -198,11 +219,21 @@ Returns `{"token": "<NEW_TOKEN>", "message": "..."}`.
 
 ## Troubleshooting
 
+**First step for any issue — check the log file:**
+
+```bash
+cat ~/.ariadne/server.log
+# or for real-time tailing:
+tail -f ~/.ariadne/server.log
+```
+
 | Symptom | Likely Cause | Fix |
 |---------|-------------|-----|
 | `401 Unauthorized` | Wrong or missing token | Re-run `ariadne-server token`, update extension |
-| `404 Client not connected` | Extension not connected to server | Open extension popup, check status dot |
+| `404 Client not connected` | Extension not connected to server | Open extension popup, check icon color |
 | `504 Gateway Timeout` | Browser took > 30 s or extension offline | Check tab group, reload extension |
+| Extension icon is red | Disconnected or auth failed | Click **Apply & Reconnect** in popup |
+| Extension icon is gray | No token set | Paste token in popup → Apply & Reconnect |
 | Extension shows "Auth failed" | Token mismatch | Re-run `ariadne-server token`, paste into extension |
 | Extension shows "Disconnected" | Server not running | Run `ariadne-server` |
 
@@ -227,7 +258,7 @@ When helping a user set up Ariadne, follow this sequence:
 2. Show the user the token and say:
    > "Please open the Ariadne extension popup in Chrome, paste this token into the
    > **API Token** field, and click **Apply & Reconnect**. Let me know when the
-   > status dot turns green."
+   > extension icon turns green."
 3. Once the user confirms the extension is connected, ask:
    > "What is your Browser Name in the extension popup? (Default is `my-browser`)"
 4. Confirm you can reach the browser:

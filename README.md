@@ -81,7 +81,16 @@ Click the extension icon and fill in the popup:
 | **Server URL** | `ws://localhost:8000` |
 | **API Token** | Paste the output of `ariadne-server token` |
 
-Click **Apply & Reconnect** — the dot turns **green** when connected.
+Click **Apply & Reconnect** — the icon changes color to reflect connection state:
+
+| Icon color | Meaning |
+|------------|---------|
+| Gray | No token configured |
+| Amber | Connecting… |
+| Green | Connected |
+| Red | Disconnected or auth failed |
+
+The **Apply & Reconnect** button is always clickable — use it any time to force a reconnect (e.g. after a network blip) without changing any settings.
 
 ### 5 — Send Your First Command
 
@@ -209,6 +218,25 @@ Chrome MV3 Service Workers can be terminated at any time. Ariadne uses three lay
 | Chrome Alarms | `chrome.alarms` (official API) | 30 s |
 | WebSocket heartbeat | PING / PONG | 15 s |
 | Exponential backoff reconnect | 1 s → 2 s → 4 s … 60 s | on disconnect |
+
+---
+
+## Logs
+
+The server writes structured logs to `~/.ariadne/server.log` (5 MB rotating, 3 files kept):
+
+```
+2026-03-02 10:23:40 INFO  [log] Logging to /Users/you/.ariadne/server.log
+2026-03-02 10:23:40 INFO  [main] Ariadne Gateway starting
+2026-03-02 10:23:45 INFO  [connection] Client registered: my-mac
+2026-03-02 10:24:01 INFO  [cmd] CMD_BROWSE dispatched: client=my-mac cmd_id=abc123 url=https://example.com
+2026-03-02 10:24:03 INFO  [cmd] CMD_BROWSE ok: client=my-mac cmd_id=abc123 elapsed=2.14s
+```
+
+```bash
+tail -f ~/.ariadne/server.log          # real-time
+grep -E "ERROR|WARN" ~/.ariadne/server.log  # errors only
+```
 
 ---
 
