@@ -9,6 +9,9 @@ class BrowsePayload(BaseModel):
     screenshot: bool = False
     selector: str | None = None
 
+class PingPayload(BaseModel):
+    action: Literal["ping"] = "ping"
+
 
 class CommandModel(BaseModel):
     cmd_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -29,3 +32,6 @@ class BrowseRequest(BaseModel):
     action: Literal["read", "screenshot", "highlight"] = "read"
     screenshot: bool = False
     selector: str | None = None
+
+class PingRequest(BaseModel):
+    action: Literal["ping"] = "ping"

@@ -54,8 +54,23 @@ export async function ensureAriadneGroup(): Promise<number> {
   }
 
   // Create a new tab in a new group
-  const tab = await chrome.tabs.create({ url: "about:blank", active: false });
-  const groupId = await chrome.tabs.group({ tabIds: [tab.id!] });
+  let tabId: number;
+  try {
+    const tab = await chrome.tabs.create({ url: "about:blank", active: false });
+    tabId = tab.id!;
+  } catch (error) {
+    // Fallback: no windows open (macOS specific behavior)
+    const win = await chrome.windows.create({ url: "about:blank" });
+    if (win.tabs && win.tabs.length > 0) {
+      tabId = win.tabs[0].id!;
+    } else {
+      // If tabs are not populated in the window object immediately
+      const tabs = await chrome.tabs.query({ windowId: win.id });
+      tabId = tabs[0].id!;
+    }
+  }
+
+  const groupId = await chrome.tabs.group({ tabIds: [tabId] });
   await chrome.tabGroups.update(groupId, {
     title: GROUP_NAME,
     color: GROUP_COLOR_IDLE,

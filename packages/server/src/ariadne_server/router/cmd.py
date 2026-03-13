@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 
 from ariadne_server.manager.connection import manager
-from ariadne_server.models import BrowseRequest, CommandModel
+from ariadne_server.models import BrowseRequest, CommandModel, PingRequest
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +40,37 @@ async def send_command(client_id: str, request: BrowseRequest) -> JSONResponse:
     except asyncio.TimeoutError:
         elapsed = time.monotonic() - t0
         logger.error("CMD_BROWSE timeout: client=%s cmd_id=%s elapsed=%.2fs", client_id, command.cmd_id, elapsed)
+        raise HTTPException(status_code=504, detail="Command timed out waiting for browser response")
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc))
+
+@router.post("/v1/ping/{client_id}")
+async def send_ping(client_id: str, request: PingRequest) -> JSONResponse:
+    if not manager.is_connected(client_id):
+        raise HTTPException(status_code=404, detail=f"Client '{client_id}' is not connected")
+
+    command = CommandModel(
+        type="CMD_PING",
+        payload=request.model_dump(),
+    )
+
+    t0 = time.monotonic()
+    logger.info("CMD_PING dispatched: client=%s cmd_id=%s", client_id, command.cmd_id)
+    try:
+        result = await manager.send_command(client_id, command)
+        elapsed = time.monotonic() - t0
+        if result.success:
+            logger.info("CMD_PING ok: client=%s cmd_id=%s elapsed=%.2fs", client_id, command.cmd_id, elapsed)
+            return JSONResponse(content={"cmd_id": result.cmd_id, "data": result.data})
+        else:
+            logger.error("CMD_PING failed: client=%s cmd_id=%s elapsed=%.2fs error=%s", client_id, command.cmd_id, elapsed, result.error)
+            return JSONResponse(
+                status_code=500,
+                content={"cmd_id": result.cmd_id, "error": result.error},
+            )
+    except asyncio.TimeoutError:
+        elapsed = time.monotonic() - t0
+        logger.error("CMD_PING timeout: client=%s cmd_id=%s elapsed=%.2fs", client_id, command.cmd_id, elapsed)
         raise HTTPException(status_code=504, detail="Command timed out waiting for browser response")
     except RuntimeError as exc:
         raise HTTPException(status_code=503, detail=str(exc))

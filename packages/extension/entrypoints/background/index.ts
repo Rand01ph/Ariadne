@@ -32,6 +32,33 @@ async function init(): Promise<void> {
 async function handleCommand(command: Command): Promise<void> {
   if (command.type === "CMD_BROWSE") {
     await handleBrowse(command);
+  } else if (command.type === "CMD_PING") {
+    await handlePing(command);
+  }
+}
+
+async function handlePing(command: Command): Promise<void> {
+  const ws = await getWebSocket();
+  try {
+    const tabs = await chrome.tabs.query({});
+    const response: Response = {
+      cmd_id: command.cmd_id,
+      type: "RESP_RESULT",
+      success: true,
+      data: {
+        browserVersion: navigator.userAgent,
+        tabCount: tabs.length,
+      },
+    };
+    ws.sendResponse(response);
+  } catch (err) {
+    console.error("[Ariadne BG] CMD_PING error:", err);
+    ws.sendResponse({
+      cmd_id: command.cmd_id,
+      type: "RESP_RESULT",
+      success: false,
+      error: err instanceof Error ? err.message : String(err),
+    });
   }
 }
 

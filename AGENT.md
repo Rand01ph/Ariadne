@@ -206,6 +206,29 @@ curl -s -X POST http://127.0.0.1:8000/v1/cmd/{browser_id} \
 - **`highlight`** — Navigate, then draw a red outline on the CSS-selector element
   and scroll it into view. Useful for pointing the user's attention somewhere.
 
+### Ping Browser (Check Connection)
+
+Use the `ping` command to verify the extension is connected and retrieve basic environment details. This is the recommended way to test the connection.
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/v1/ping/{browser_id} \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"action": "ping"}'
+```
+
+**Response (success):**
+
+```json
+{
+  "cmd_id": "uuid-here",
+  "data": {
+    "browserVersion": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36...",
+    "tabCount": 14
+  }
+}
+```
+
 ### Rotate Token via API
 
 ```bash
@@ -261,11 +284,11 @@ When helping a user set up Ariadne, follow this sequence:
    > extension icon turns green."
 3. Once the user confirms the extension is connected, ask:
    > "What is your Browser Name in the extension popup? (Default is `my-browser`)"
-4. Confirm you can reach the browser:
+4. Confirm you can reach the browser using the `ping` command:
    ```bash
-   curl -s -X POST http://127.0.0.1:8000/v1/cmd/{browser_id} \
+   curl -s -X POST http://127.0.0.1:8000/v1/ping/{browser_id} \
      -H "Authorization: Bearer <TOKEN>" \
      -H "Content-Type: application/json" \
-     -d '{"url":"https://example.com","action":"read","screenshot":false}'
+     -d '{"action": "ping"}'
    ```
-5. If the response contains `"title": "Example Domain"`, setup is complete.
+5. If the response contains `"browserVersion"`, setup is complete.

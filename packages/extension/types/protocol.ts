@@ -1,6 +1,6 @@
 // Protocol types for Ariadne Extension <-> Server communication
 
-export type CommandType = "CMD_BROWSE";
+export type CommandType = "CMD_BROWSE" | "CMD_PING";
 export type ResponseType = "RESP_RESULT";
 export type PingType = "PING";
 export type PongType = "PONG";
@@ -25,11 +25,16 @@ export interface BrowseResultData {
   url: string;
 }
 
+export interface PingResultData {
+  browserVersion?: string;
+  tabCount?: number;
+}
+
 export interface Response {
   cmd_id: string;
   type: ResponseType;
   success: boolean;
-  data?: BrowseResultData;
+  data?: BrowseResultData | PingResultData;
   error?: string;
 }
 
