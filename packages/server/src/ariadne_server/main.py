@@ -34,7 +34,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 app = FastAPI(
     title="Ariadne Gateway",
     description="Bridges remote AI agents to local browser via Chrome Extension",
-    version="0.1.0",
+    version="0.3.0",
     lifespan=lifespan,
 )
 

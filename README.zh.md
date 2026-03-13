@@ -62,7 +62,7 @@ curl -s -X POST http://127.0.0.1:8000/v1/cmd/my-browser \
 **从 GitHub Release 安装（推荐）：**
 
 ```bash
-uv tool install https://github.com/Rand01ph/Ariadne/releases/latest/download/ariadne_server-0.1.0-py3-none-any.whl
+uv tool install https://github.com/Rand01ph/Ariadne/releases/latest/download/ariadne_server-0.3.0-py3-none-any.whl
 ```
 
 **从源码安装：**
@@ -302,7 +302,7 @@ pnpm build
 - `ariadne_server-*.whl` — uv 安装服务端
 
 ```bash
-git tag v0.1.0 && git push origin v0.1.0
+git tag v0.3.0 && git push origin v0.3.0
 ```
 
 ---

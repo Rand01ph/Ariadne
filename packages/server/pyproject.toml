@@ -1,6 +1,6 @@
 [project]
 name = "ariadne-server"
-version = "0.1.0"
+version = "0.3.0"
 description = "Ariadne Gateway Server - bridges remote AI agents to local browser"
 readme = "README.md"
 requires-python = ">=3.12"

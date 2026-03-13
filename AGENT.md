@@ -42,7 +42,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 # Find the latest release wheel URL from:
 # https://github.com/Rand01ph/Ariadne/releases/latest
 # Then install:
-uv tool install https://github.com/Rand01ph/Ariadne/releases/latest/download/ariadne_server-0.1.0-py3-none-any.whl
+uv tool install https://github.com/Rand01ph/Ariadne/releases/latest/download/ariadne_server-0.3.0-py3-none-any.whl
 ```
 
 **Option B — From source (if you have the repo cloned):**

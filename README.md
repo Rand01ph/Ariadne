@@ -63,7 +63,7 @@ Every browser operation runs inside a dedicated **"🤖 Ariadne Agent" tab group
 **From a GitHub Release (recommended):**
 
 ```bash
-uv tool install https://github.com/Rand01ph/Ariadne/releases/latest/download/ariadne_server-0.1.0-py3-none-any.whl
+uv tool install https://github.com/Rand01ph/Ariadne/releases/latest/download/ariadne_server-0.3.0-py3-none-any.whl
 ```
 
 **From source:**
@@ -304,7 +304,7 @@ Pushing a `v*` tag triggers a GitHub Actions release that builds and attaches:
 - `ariadne_server-*.whl` — install with uv
 
 ```bash
-git tag v0.1.0 && git push origin v0.1.0
+git tag v0.3.0 && git push origin v0.3.0
 ```
 
 ---
